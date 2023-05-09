@@ -8,6 +8,12 @@ const app = require('../app')
 beforeEach( () => seed(data))
 afterAll( () => db.end())
 
+describe('bad endpoint', () => {
+    it('returns 404 when privided a bad endpoint', () => {
+        return request(app).get('/api/categoriess').expect(404)
+    });
+});
+
 describe('/api/categories', () => {
     
     it('returns 200, array of category object containing 4 entries', () => {
@@ -30,8 +36,22 @@ describe('/api/categories', () => {
             expect(categories[0]).toHaveProperty('description')
         })
     })
+});
 
-    it('returns 404 when privided a wrong endpoint', () => {
-        return request(app).get('/api/categoriess').expect(404)
+describe('GET /api', () => {
+    it('returns status 200', () => {
+        return request(app).get('/api').expect(200)
+    })
+    it('retunrns an object with available endpoints', () => {
+        return request(app).get('/api').
+        then( result => {
+            expect(typeof result.body).toBe('object')
+            expect(result.body).toHaveProperty("GET /api")
+            expect(result.body).toHaveProperty("GET /api/categories")
+        })
+    })
+    it('handles some error?', () => {
+        
     });
+
 });
