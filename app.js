@@ -16,6 +16,7 @@ app.get('/api/categories', getCategories)
 /* /api/reviews/:review_id */
 app.get('/api/reviews/:review_id', getReviewByID)
 
+/* /api/reviews */
 app.get('/api/reviews', getReviews)
 
 app.use((err, req, res, next) => {
