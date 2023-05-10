@@ -2,7 +2,7 @@ const db = require('../db/connection')
 
 exports.fetchReviewByID = (id) => {
     if(!id) return Promise.reject({status: 400, msg: "Invalid Id"})
-
+    
     return db.query(`SELECT * FROM reviews WHERE review_id = ${id}`)
     .then(result => result.rows)
     .then( review => {
