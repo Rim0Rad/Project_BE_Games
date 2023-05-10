@@ -113,10 +113,95 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+describe("GET /api/reviews", () => {
+  it("returns 200 with an array of review objects", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then((result) => {
+        return result.body.reviews;
+      })
+      .then((reviews) => {
+        expect(Array.isArray(reviews)).toBe(true);
+      });
+  });
+  it("reviews has required properties", () => {
+    return request(app)
+      .get("/api/reviews")
+      .then((result) => {
+        return result.body.reviews;
+      })
+      .then((reviews) => {
+        reviews.forEach((review) => {
+          expect(review).toHaveProperty("owner");
+          expect(review).toHaveProperty("title");
+          expect(review).toHaveProperty("review_id");
+          expect(review).toHaveProperty("category");
+          expect(review).toHaveProperty("review_img_url");
+          expect(review).toHaveProperty("created_at");
+          expect(review).toHaveProperty("votes");
+          expect(review).toHaveProperty("designer");
+        });
+      });
+  });
+  it("has property comment_count which is the number of comments with this review_id", () => {
+    return request(app)
+      .get("/api/reviews")
+      .then((result) => {
+        return result.body.reviews;
+      })
+      .then((reviews) => {
+        return db
+          .query(`SELECT * FROM comments;`)
+          .then((result) => result.rows)
+          .then((comments) => {
+            reviews.forEach((review) => {
+              //Calculate comments for each review
+              let commentCount = 0;
+              comments.forEach((comment) => {
+                if (comment.review_id === review.review_id) {
+                  commentCount++;
+                }
+              });
 
-describe('Server error', () => {
-    it("return 500 if server is not responding", () => {
-        if(db) db.end()
-        return request(app).get('/api/categories').expect(500)
-    })
+              expect(review).toHaveProperty("comment_count");
+              expect(review.comment_count).toBe(commentCount);
+            });
+          });
+      });
+  });
+  it("does not have a property review_body", () => {
+    return request(app)
+      .get("/api/reviews")
+      .then((result) => result.body.reviews)
+      .then((reviews) => {
+        reviews.forEach((review) => {
+          expect(review).not.toHaveProperty("review_body");
+        });
+      });
+  });
+
+  it("reviews are sorted by data in decending order by default", () => {
+    return request(app)
+      .get("/api/reviews")
+      .then((result) => result.body.reviews)
+      .then((reviews) => {
+        for (let i = 1; i < reviews.length; i++) {
+          expect(Date.parse(reviews[i - 1].created_at)).toBeLessThanOrEqual(
+            Date.parse(reviews[i].created_at)
+          );
+        }
+      });
+  });
+});
+
+/* Stop database and test qurry responses for endpoints*/
+describe("500 Internal Server Error", () => {
+  it("returns 500 for internal server error", () => {
+    if (db) db.end();
+    const getCategories = request(app).get("/api/categories").expect(500);
+    const getReviews = request(app).get("/api/reviews").expect(500);
+    const getReviewsById = request(app).get("/api/reviews/2").expect(500);
+    return Promise.all([getCategories, getReviews, getReviewsById]);
+  });
 });
