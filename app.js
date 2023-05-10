@@ -2,7 +2,7 @@ const express  = require('express')
 const app = express()
 const { getCategories } = require('./controllers/categories.controller.js')
 const { getApi } = require('./controllers/api.controller.js')
-const { getReviewByID } = require('./controllers/reviews.controller.js')
+const { getReviewByID, getReviews } = require('./controllers/reviews.controller.js')
 
 app.use(express.json())
 
@@ -15,6 +15,8 @@ app.get('/api/categories', getCategories)
 
 /* /api/reviews/:review_id */
 app.get('/api/reviews/:review_id', getReviewByID)
+
+app.get('/api/reviews', getReviews)
 
 app.use((err, req, res, next) => {
     res.status(err.status).send(err.msg)
