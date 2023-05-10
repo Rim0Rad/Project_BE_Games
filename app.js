@@ -13,9 +13,16 @@ app.get('/api', getApi)
 /* /api/categories */
 app.get('/api/categories', getCategories)
 
+/* /api/reviews/:review_id */
+app.get('/api/reviews/:review_id', getReviewByID)
 
-app.use((err, req, res, next) => {
+app.use((err, req, res, next)=> {
     res.status(err.status).send(err)
+    
+})
+
+app.use((req, res) => {
+    res.status(404).send({msg: 'Bad Request', status: 404})
 })
 
 
