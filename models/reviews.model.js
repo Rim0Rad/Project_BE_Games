@@ -12,3 +12,11 @@ exports.fetchReviewByID = (id) => {
         return review[0]
     })
 }
+
+exports.fetchReviewComments = (id) => {
+    return this.fetchReviewByID(id)
+    .then( review => {
+        return db.query(`SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC`, [review.review_id])
+    })
+    .then( result => result.rows)
+}

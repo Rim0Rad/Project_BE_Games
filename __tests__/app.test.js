@@ -113,7 +113,70 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+/* Responds with:
 
+an array of comments for the given review_id of which each comment should have the following properties:
+- comment_id
+- votes
+- created_at
+- author
+- body
+- review_id
+comments should be served with the most recent comments first
+ */
+
+describe('GET /api/review/:review_id/comments', () => {
+    it('returns status 200', () => {
+        return request(app).get('/api/reviews/1/comments').expect(200)
+    });
+    it('returns and array', () =>{
+        return request(app).get('/api/reviews/1/comments')
+        .then( result => result.body.comments )
+        .then( comments => {
+            expect(Array.isArray(comments))
+        })
+    });
+    it('has correct properties ', () => {
+        return request(app).get('/api/reviews/2/comments')
+        .then( result => result.body.comments )
+        .then( comments => {
+            comments.forEach( comment => {
+                expect(comment).toHaveProperty('comment_id')
+                expect(comment).toHaveProperty('votes')
+                expect(comment).toHaveProperty('created_at')
+                expect(comment).toHaveProperty('author')
+                expect(comment).toHaveProperty('body')
+                expect(comment).toHaveProperty('review_id')
+            })
+        })
+    }); 
+    it('comments are sorted by created_at with acending order', () => {
+        return request(app).get('/api/reviews/3/comments')
+        .then( result => result.body.comments )
+        .then( comments => {
+            for(let i = 1; i < comments.length; i++){
+                expect(Date.parse(comments[i].created_at)).toBeLessThanOrEqual(Date.parse(comments[i-1].created_at))
+            }
+        })
+    });
+    it('returns 404 when id does not match a review', () => {
+        return request(app).get('/api/reviews/145151/comments').expect(404)
+        .then( result => result.body.comments )
+        .then( comments => {
+            
+        })
+    })
+    it('returns 400 when id is invalid', () => {
+        return request(app).get('/api/reviews/pony/comments').expect(400)
+        .then( result => result.body.comments )
+        .then( comments => {
+        
+        })
+    });
+});
+
+
+/* SERVER ERROR - server connection is ended therefore this test should run last*/
 describe('Server error', () => {
     it("return 500 if server is not responding", () => {
         if(db) db.end()
