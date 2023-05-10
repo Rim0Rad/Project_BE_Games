@@ -17,7 +17,7 @@ app.get('/api/categories', getCategories)
 app.get('/api/reviews/:review_id', getReviewByID)
 
 app.use((err, req, res, next) => {
-    res.status(err.status).send(err.msg)
+    res.status(err.status).send(err)
 })
 
 

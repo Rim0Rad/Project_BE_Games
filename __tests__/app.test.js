@@ -61,7 +61,7 @@ describe('GET /api', () => {
 
 describe('GET /api/reviews/:review_id', () => {
     
-    it('returns status 200 and a review object', () => {
+    it('returns status 200', () => {
         return request(app).get('/api/reviews/1').expect(200)
     });
 
@@ -90,12 +90,20 @@ describe('GET /api/reviews/:review_id', () => {
             expect(body.review.review_body).toBe('Fiddly fun for all the family')
             expect(body.review.category).toBe('dexterity')
             expect(body.review.votes).toBe(5)
-            //expect(result.body.created_at).toBe(?)
         })
     });
 
     it('returns 404 when given bad id', () => {
         return request(app).get('/api/reviews/124124214').expect(404)
+        .then( (result) => {
+           expect(result.body.msg).toBe('Review by that ID does not exist')
+        })
+    })
+    it('returns 404 when given bad id', () => {
+        return request(app).get('/api/reviews/hello').expect(400)
+        .then( (result) => {
+            expect(result.body.msg).toBe('Invalid Id')
+         })
     })
     
 });
