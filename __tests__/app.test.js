@@ -97,7 +97,7 @@ describe("GET /api/reviews/:review_id", () => {
       });
   });
 
-  it("returns 404 when given bad id", () => {
+  it("returns 404 when review by that id does not exist", () => {
     return request(app)
       .get("/api/reviews/124124214")
       .expect(404)
@@ -105,7 +105,7 @@ describe("GET /api/reviews/:review_id", () => {
         expect(result.body.msg).toBe("Review by that ID does not exist");
       });
   });
-  it("returns 404 when given bad id", () => {
+  it("returns 400 when given invalid id", () => {
     return request(app).get("/api/reviews/hello").expect(400)
       .then((result) => {
         expect(result.body.msg).toBe("Invalid Id");
