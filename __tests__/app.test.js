@@ -6,11 +6,15 @@ const request = require('supertest')
 const app = require('../app')
 
 beforeEach( () => seed(data))
-afterAll( () => db.end())
+//afterAll( () => db.end())
 
 describe('bad endpoint', () => {
     it('returns 404 when privided a bad endpoint', () => {
-        return request(app).get('/api/categoriess').expect(404)
+        return request(app).get('/api/categodwadriess').expect(404)
+        .then(result => {
+            expect(result.body.msg).toBe('Bad Request')
+            expect(result.body.status).toBe(404)
+        })
     });
 });
 
@@ -53,5 +57,12 @@ describe('GET /api', () => {
     it('handles some error?', () => {
         
     });
+});
 
+
+describe('Server error', () => {
+    it("return 500 if server is not responding", () => {
+        if(db) db.end()
+        return request(app).get('/api/categories').expect(500)
+    })
 });

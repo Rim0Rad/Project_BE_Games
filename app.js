@@ -13,11 +13,16 @@ app.get('/api', getApi)
 app.get('/api/categories', getCategories)
 
 
-
-
-app.use((err, req, res, next) => {
-    res.status(400).send({msg: 'Bad REquest', error: err})
+app.use((err, req, res, next)=> {
+    res.status(500).send({msg: "Internal Server Error", status: err.status})
+    
 })
+app.use((req, res) => {
+    res.status(404).send({msg: 'Bad Request', status: 404})
+})
+
+
+
 
 
 module.exports = app
