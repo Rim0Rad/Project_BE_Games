@@ -54,9 +54,6 @@ describe('GET /api', () => {
             expect(result.body).toHaveProperty("GET /api/categories")
         })
     })
-    it('handles some error?', () => {
-        
-    });
 });
 
 
