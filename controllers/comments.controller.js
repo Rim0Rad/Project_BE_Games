@@ -3,7 +3,7 @@ const { uploadComment } = require('../models/comments.model.js')
 exports.postComment = (req, res, next) => {
     
     const comment = req.body;
-    const review_id = Number(req.params.review_id)
+    const review_id = req.params.review_id
     uploadComment(comment, review_id)
     .then( comment => {
         res.status(201).send({comment: comment})

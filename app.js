@@ -23,7 +23,6 @@ app.get('/api/reviews/:review_id/comments', getReviewComments)
 /* /api/reviews */
 app.get('/api/reviews', getReviews)
 
-/* Error hanlder */
 app.use((err, req, res, next) => {
     res.status(err.status).send(err)
 })

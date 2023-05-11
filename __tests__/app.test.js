@@ -140,16 +140,16 @@ describe('POST /api/reviews/:review_id/comment', () => {
             expect(comment).toHaveProperty('created_at')
         })
     });
-    it('returns status 400 when given user that does not exist', () => {
+    it('returns status 404 when given user that does not exist', () => {
         const newComment = {
             username: "AverageUser",
             body: " Best review ever!"
         }
         return request(app).post('/api/reviews/2/comments')
-        .send(newComment).expect(400)
+        .send(newComment).expect(404)
         .then( result => result.body)
         .then( err => {
-            expect(err.msg).toBe('User does not exist')
+            expect(err.msg).toBe('Username "AverageUser" does not exist')
         })
     });
     it('returns status 400 when comment is missing body', () => {
@@ -163,7 +163,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
             expect(err.msg).toBe('Comment is missing a body')
         })
     });
-    it('returns status 404 when review by given id does not exist', () => {
+    it('returns status 404 when review by given review id does not exist', () => {
         const newComment = {
             username: 'bainesface',
             body:"does this review exists?!"
@@ -175,7 +175,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
             expect(err.msg).toBe('Review does not exist')
         })
     });
-    it('returns status 400 when review is is invalid', () => {
+    it('returns status 400 when review id is invalid', () => {
         const newComment = {
             username: 'bainesface',
             body:"Well thats not an ID!"
@@ -184,7 +184,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
         .send(newComment).expect(400)
         .then( result => result.body)
         .then( err => {
-            expect(err.msg).toBe('Invalid review ID')
+            expect(err.msg).toBe('Review ID "pumpkin" is invalid - use and integer')
         })
     });
 });
