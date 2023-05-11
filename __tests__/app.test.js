@@ -226,6 +226,14 @@ describe("GET /api/reviews", () => {
   });
 });
 
+describe('QUERY GET /api/reviews', () => {
+  it(" default setings: category=allReviews, sort_by=date, order=decending", () => {
+    //do a request check if all reviews returned, sorted by data(use jest sort) in decending order
+    
+
+  })
+});
+
 /* Stop database and test qurry responses for endpoints*/
 describe("500 Internal Server Error", () => {
   it("returns 500 for internal server error", () => {
