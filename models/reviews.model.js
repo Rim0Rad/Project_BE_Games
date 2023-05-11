@@ -31,3 +31,26 @@ exports.fetchReviews = () => {
         })
     })
 }
+
+exports.updateVotes = (reviewId, voteChange) => {
+    if(!voteChange.inc_vote){
+        return Promise.reject({status: 400, msg: `Key "${Object.keys(voteChange)[0]}" in sent data is not correct - use key "inc_vote"`})
+    }
+    if(!Number(voteChange.inc_vote)){
+        return Promise.reject({status: 400, msg: `Data sent "${voteChange.inc_vote}" is not compatible - use an integer`})
+    }
+    return db.query(`
+    UPDATE reviews
+    SET votes = votes + $1
+    WHERE review_id = $2
+    RETURNING *;`, [voteChange.inc_vote, reviewId])
+    .then( result => result.rows[0])
+    .then( review => {
+        
+        if(!review){
+            return Promise.reject({status: 404, msg: `Review by by ID "${reviewId}" does not exist!`})
+        }
+        return review
+    })
+
+}
