@@ -12,3 +12,30 @@ exports.fetchReviewByID = (id) => {
         return review[0]
     })
 }
+
+exports.fetchReviewComments = (id) => {
+    return this.fetchReviewByID(id)
+    .then( review => {
+        return db.query(`SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC`, [review.review_id])
+    })
+    .then( result => result.rows)
+}
+
+exports.fetchReviews = () => {
+    return db.query(`SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer FROM reviews ORDER BY created_at;`)
+    .then( result => result.rows)
+    .then( reviews => {
+        const promises = []
+        for(let i = 0; i < reviews.length; i++){
+            promises.push(db.query(`SELECT COUNT(review_id) FROM comments WHERE review_id = $1;`, [reviews[i].review_id])
+            .then(result => result.rows[0].count)
+            .then( count => {
+                reviews[i].comment_count = Number(count)
+            }))
+        }
+        return Promise.all(promises)
+        .then( result => {
+            return reviews
+        })
+    })
+}
