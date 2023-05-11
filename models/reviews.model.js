@@ -14,23 +14,20 @@ exports.fetchReviewByID = (id) => {
 }
 
 exports.fetchReviews = () => {
-    return db.query(`SELECT * FROM reviews ORDER BY created_at;`)
+    return db.query(`SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer FROM reviews ORDER BY created_at;`)
     .then( result => result.rows)
     .then( reviews => {
-        return db.query(`SELECT * FROM comments`)
-        .then( result => result.rows)
-        .then( comments => {
-            return reviews.map( review => {
-                delete review.review_body
-                let commentCount = 0
-                comments.forEach( comment => {
-                    if(comment.review_id === review.review_id){
-                        commentCount++
-                    }
-                })
-                review.comment_count = commentCount
-                return review
-            })
+        const promises = []
+        for(let i = 0; i < reviews.length; i++){
+            promises.push(db.query(`SELECT COUNT(review_id) FROM comments WHERE review_id = $1;`, [reviews[i].review_id])
+            .then(result => result.rows[0].count)
+            .then( count => {
+                reviews[i].comment_count = Number(count)
+            }))
+        }
+        return Promise.all(promises)
+        .then( result => {
+            return reviews
         })
     })
 }

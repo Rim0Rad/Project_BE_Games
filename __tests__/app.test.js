@@ -145,29 +145,14 @@ describe("GET /api/reviews", () => {
       });
   });
   it("has property comment_count which is the number of comments with this review_id", () => {
-    return request(app)
-      .get("/api/reviews")
-      .then((result) => {
-        return result.body.reviews;
-      })
+    const commentCount = [null, 0, 3, 3, 0, 0 ,0 ,0 ,0 ,0 ,0 ,0 ,0, 0 ]
+    return request(app).get("/api/reviews")
+      .then((result) => result.body.reviews)
       .then((reviews) => {
-        return db
-          .query(`SELECT * FROM comments;`)
-          .then((result) => result.rows)
-          .then((comments) => {
-            reviews.forEach((review) => {
-              //Calculate comments for each review
-              let commentCount = 0;
-              comments.forEach((comment) => {
-                if (comment.review_id === review.review_id) {
-                  commentCount++;
-                }
-              });
-
-              expect(review).toHaveProperty("comment_count");
-              expect(review.comment_count).toBe(commentCount);
-            });
-          });
+        reviews.forEach((review) => {
+            expect(review).toHaveProperty("comment_count");
+            expect(review.comment_count).toBe(commentCount[review.review_id]);
+        });
       });
   });
   it("does not have a property review_body", () => {
@@ -186,11 +171,7 @@ describe("GET /api/reviews", () => {
       .get("/api/reviews")
       .then((result) => result.body.reviews)
       .then((reviews) => {
-        for (let i = 1; i < reviews.length; i++) {
-          expect(Date.parse(reviews[i - 1].created_at)).toBeLessThanOrEqual(
-            Date.parse(reviews[i].created_at)
-          );
-        }
+        expect(reviews).toBeSorted({decending: true, key: 'created_at'})
       });
   });
 });
