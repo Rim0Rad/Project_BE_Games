@@ -13,6 +13,14 @@ exports.fetchReviewByID = (id) => {
     })
 }
 
+exports.fetchReviewComments = (id) => {
+    return this.fetchReviewByID(id)
+    .then( review => {
+        return db.query(`SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC`, [review.review_id])
+    })
+    .then( result => result.rows)
+}
+
 exports.fetchReviews = () => {
     return db.query(`SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer FROM reviews ORDER BY created_at;`)
     .then( result => result.rows)
