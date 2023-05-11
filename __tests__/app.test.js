@@ -113,6 +113,82 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+describe('POST /api/reviews/:review_id/comment', () => {
+    it('returns status 201', () => {
+        const newComment = {
+            username: "mallionaire",
+            body: " Great game"
+        }
+        return request(app).post('/api/reviews/1/comments')
+        .send(newComment).expect(201)
+    });
+
+    it('returns posted comment', () => {
+        const newComment = {
+            username: "philippaclaire9",
+            body: " Best review ever!"
+        }
+        return request(app).post('/api/reviews/2/comments')
+        .send(newComment)
+        .then(result => result.body.comment)
+        .then( comment => {
+            expect(comment).toHaveProperty('comment_id')
+            expect(comment).toHaveProperty('body')
+            expect(comment).toHaveProperty('review_id')
+            expect(comment).toHaveProperty('author')
+            expect(comment).toHaveProperty('votes')
+            expect(comment).toHaveProperty('created_at')
+        })
+    });
+    it('returns status 404 when given user that does not exist', () => {
+        const newComment = {
+            username: "AverageUser",
+            body: " Best review ever!"
+        }
+        return request(app).post('/api/reviews/2/comments')
+        .send(newComment).expect(404)
+        .then( result => result.body)
+        .then( err => {
+            expect(err.msg).toBe('Username "AverageUser" does not exist')
+        })
+    });
+    it('returns status 400 when comment is missing body', () => {
+        const newComment = {
+            username: "dav3rid",
+        }
+        return request(app).post('/api/reviews/2/comments')
+        .send(newComment).expect(400)
+        .then( result => result.body)
+        .then( err => {
+            expect(err.msg).toBe('Comment is missing a body')
+        })
+    });
+    it('returns status 404 when review by given review id does not exist', () => {
+        const newComment = {
+            username: 'bainesface',
+            body:"does this review exists?!"
+        }
+        return request(app).post('/api/reviews/244/comments')
+        .send(newComment).expect(404)
+        .then( result => result.body)
+        .then( err => {
+            expect(err.msg).toBe('Review does not exist')
+        })
+    });
+    it('returns status 400 when review id is invalid', () => {
+        const newComment = {
+            username: 'bainesface',
+            body:"Well thats not an ID!"
+        }
+        return request(app).post('/api/reviews/pumpkin/comments')
+        .send(newComment).expect(400)
+        .then( result => result.body)
+        .then( err => {
+            expect(err.msg).toBe('Review ID "pumpkin" is invalid - use and integer')
+        })
+    });
+});
+
 describe('GET /api/review/:review_id/comments', () => {
     it('returns status 200', () => {
         return request(app).get('/api/reviews/1/comments').expect(200)
