@@ -324,7 +324,6 @@ describe('GET /api/user', () => {
         expect(user).toHaveProperty('avatar_url')
       
       })
-      
     })
   });
 });
