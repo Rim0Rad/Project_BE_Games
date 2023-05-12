@@ -1,9 +1,10 @@
 const db = require('../db/connection')
+const format = require('pg-format')
 
 exports.fetchReviewByID = (id) => {
     if(!id) return Promise.reject({status: 400, msg: "Invalid Id"})
     
-    return db.query(`SELECT * FROM reviews WHERE review_id = ${id}`)
+    return db.query(`SELECT * FROM reviews WHERE review_id = $1`, [id])
     .then(result => result.rows)
     .then( review => {
         if(review.length === 0){
@@ -21,15 +22,29 @@ exports.fetchReviewComments = (id) => {
     .then( result => result.rows)
 }
 
-exports.fetchReviews = (queries) => {
+exports.fetchReviews = (category = null, sort_by = 'created_at', order = 'DESC') => {
 
+    const acceptableOrderQuery = [ 'ASC', 'DESC'];
+    const acceptedSortBy = ['owner', 'title','review_id','category','review_img_url','created_at','votes','designer']
+    if(!acceptedSortBy.includes(sort_by)){
+        return Promise.reject({status: 400, msg: `Parameter sort_by value "${sort_by}" is invalid`})
+    }
+    if(!acceptableOrderQuery.includes(order)){
+        return Promise.reject({status: 400, msg: `Parameter order value "${order}" is invalid`})
+    }
 
-    //if( queries.owner)
-
-    // get reviews
-    return db.query(`SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer FROM reviews ORDER BY created_at;`)
+    let sql = 'SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer FROM reviews'
+    if(category){
+        sql += format(` WHERE category = %L`, category)
+    }
+    sql = format(sql + " ORDER BY %s %s", sort_by, order)
+    
+    return db.query(sql)
     .then( result => result.rows)
     .then( reviews => {
+        if(reviews.length === 0){
+            return Promise.reject({status: 404, msg: `Category "${category}" does not exist`})
+        }
         // Count the number of comments on the review
         const promises = []
         for(let i = 0; i < reviews.length; i++){
@@ -40,9 +55,7 @@ exports.fetchReviews = (queries) => {
             }))
         }
         return Promise.all(promises)
-        .then( result => {
-            return reviews
-        })
+        .then( () =>  reviews)
     })
 }
 

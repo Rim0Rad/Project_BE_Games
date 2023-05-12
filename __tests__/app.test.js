@@ -297,7 +297,7 @@ describe("GET /api/reviews", () => {
       .get("/api/reviews")
       .then((result) => result.body.reviews)
       .then((reviews) => {
-        expect(reviews).toBeSorted({decending: true, key: 'created_at'})
+        expect(reviews).toBeSorted('created_at', {decending: true})
       });
   });
 });
@@ -373,17 +373,55 @@ describe('QUERY GET /api/reviews', () => {
     .then( result => result.body.reviews)
     .then( reviews => {
       expect(reviews).toHaveLength(13)
-      expect(reviews).toBeSorted({decending: true, key: 'created_at'})
+      expect(reviews).toBeSorted( 'created_at', {decending: true})
     })
   })
-  // it('returns review selected by provided category value ', () => {
-  //   return request(app).get('/api/reviews?owner=millionaire').expect(200)
-  //   .then( result => result.body.reviews)
-  //   .then( reviews => {
-  //     expect(reviews).toHaveLength(11)
-  //     expect(reviews).toBeSorted({decending: true, key: 'created_at'})
-  //    });
-  // });
+  it('returns reviews filtered by provided category', () => {
+    return request(app).get('/api/reviews?category=dexterity').expect(200)
+    .then( result => result.body.reviews)
+    .then( reviews => {
+      expect(reviews).toHaveLength(1)
+      expect(reviews).toBeSorted('created_at', {decending: true })
+     });
+  });
+
+  it('returns reviews sorted by provided sort_by column ', () => {
+    return request(app).get('/api/reviews?sort_by=title').expect(200)
+    .then( result => result.body.reviews)
+    .then( reviews => {
+      expect(reviews).toBeSorted('title', {decending: true })
+     });
+  });
+  it('returns reviews ordered by provideded order', () => {
+    return request(app).get('/api/reviews?order=ASC').expect(200)
+    .then( result => result.body.reviews)
+    .then( reviews => {
+      expect(reviews).toBeSorted('created_at', {decending: false })
+     });
+  });
+
+  it("returns 400 if sort_by query is invalid", () => {
+    return request(app).get('/api/reviews?sort_by=apple').expect(400)
+    .then( result => result.body)
+    .then( error => {
+      expect(error.msg).toBe('Parameter sort_by value "apple" is invalid')
+    });
+  })
+  it('returns 400 if order query is invalid', () => {
+    return request(app).get('/api/reviews?order=INVERSEandBACK').expect(400)
+    .then( result => result.body)
+    .then( error => {
+      expect(error.msg).toBe('Parameter order value "INVERSEandBACK" is invalid')
+    });
+  });
+ 
+  it('returns 400 if Category query is invalid', () => {
+    return request(app).get('/api/reviews?category=nothing').expect(404)
+    .then( result => result.body)
+    .then( error => {
+      expect(error.msg).toBe('Category "nothing" does not exist')
+    });
+  });
 });
 
 /* Stop database and test qurry responses for endpoints*/
