@@ -30,7 +30,7 @@ exports.fetchReviews = (category = null, sort_by = 'created_at', order = 'DESC')
     if(!acceptedSortBy.includes(sort_by)){
         return Promise.reject({status: 400, msg: `Parameter sort_by value "${sort_by}" is invalid`})
     }
-    if(!acceptableOrderQuery.includes(order)){
+    if(!acceptableOrderQuery.includes(order.toUpperCase())){
         return Promise.reject({status: 400, msg: `Parameter order value "${order}" is invalid`})
     }
     

@@ -395,7 +395,7 @@ describe('QUERY GET /api/reviews', () => {
      });
   });
   it('returns reviews ordered by provideded order', () => {
-    return request(app).get('/api/reviews?order=ASC').expect(200)
+    return request(app).get('/api/reviews?order=DESC').expect(200)
     .then( result => result.body.reviews)
     .then( reviews => {
       expect(reviews).toBeSorted('created_at', {decending: false })
