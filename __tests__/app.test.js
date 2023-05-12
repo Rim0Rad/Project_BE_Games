@@ -113,6 +113,82 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+describe('POST /api/reviews/:review_id/comment', () => {
+    it('returns status 201', () => {
+        const newComment = {
+            username: "mallionaire",
+            body: " Great game"
+        }
+        return request(app).post('/api/reviews/1/comments')
+        .send(newComment).expect(201)
+    });
+
+    it('returns posted comment', () => {
+        const newComment = {
+            username: "philippaclaire9",
+            body: " Best review ever!"
+        }
+        return request(app).post('/api/reviews/2/comments')
+        .send(newComment)
+        .then(result => result.body.comment)
+        .then( comment => {
+            expect(comment).toHaveProperty('comment_id')
+            expect(comment).toHaveProperty('body')
+            expect(comment).toHaveProperty('review_id')
+            expect(comment).toHaveProperty('author')
+            expect(comment).toHaveProperty('votes')
+            expect(comment).toHaveProperty('created_at')
+        })
+    });
+    it('returns status 404 when given user that does not exist', () => {
+        const newComment = {
+            username: "AverageUser",
+            body: " Best review ever!"
+        }
+        return request(app).post('/api/reviews/2/comments')
+        .send(newComment).expect(404)
+        .then( result => result.body)
+        .then( err => {
+            expect(err.msg).toBe('Username "AverageUser" does not exist')
+        })
+    });
+    it('returns status 400 when comment is missing body', () => {
+        const newComment = {
+            username: "dav3rid",
+        }
+        return request(app).post('/api/reviews/2/comments')
+        .send(newComment).expect(400)
+        .then( result => result.body)
+        .then( err => {
+            expect(err.msg).toBe('Comment is missing a body')
+        })
+    });
+    it('returns status 404 when review by given review id does not exist', () => {
+        const newComment = {
+            username: 'bainesface',
+            body:"does this review exists?!"
+        }
+        return request(app).post('/api/reviews/244/comments')
+        .send(newComment).expect(404)
+        .then( result => result.body)
+        .then( err => {
+            expect(err.msg).toBe('Review does not exist')
+        })
+    });
+    it('returns status 400 when review id is invalid', () => {
+        const newComment = {
+            username: 'bainesface',
+            body:"Well thats not an ID!"
+        }
+        return request(app).post('/api/reviews/pumpkin/comments')
+        .send(newComment).expect(400)
+        .then( result => result.body)
+        .then( err => {
+            expect(err.msg).toBe('Review ID "pumpkin" is invalid - use and integer')
+        })
+    });
+});
+
 describe('GET /api/review/:review_id/comments', () => {
     it('returns status 200', () => {
         return request(app).get('/api/reviews/1/comments').expect(200)
@@ -226,15 +302,89 @@ describe("GET /api/reviews", () => {
   });
 });
 
-// describe('QUERY GET /api/reviews', () => {
-//   it(" default setings: category=allReviews, sort_by=date, order=decending", () => {
-//     //do a request check if all reviews returned, sorted by data(use jest sort) in decending order
-//     return request(app).get('/api/reviews').expect(200)
-//     .then( result => {
+describe('PATCH /api/reviews/:review_id', () => {
+    it('returns status 200', () => {
+        const voteUpdate = {
+            inc_vote: 1
+        }
+        return request(app).patch('/api/reviews/1').send(voteUpdate).expect(200)
+    });
+    it('returned comment has required properties', () => {
+        const voteUpdate = {
+            inc_vote: 1
+        }
+        return request(app).patch('/api/reviews/1').send(voteUpdate)
+        .then( result => result.body.review)
+        .then( review  => {
+            expect(review).toHaveProperty('review_id')
+            expect(review).toHaveProperty('title')
+            expect(review).toHaveProperty('designer')
+            expect(review).toHaveProperty('owner')
+            expect(review).toHaveProperty('review_img_url')
+            expect(review).toHaveProperty('review_body')
+            expect(review).toHaveProperty('category')
+            expect(review).toHaveProperty('created_at')
+            expect(review).toHaveProperty('votes')
+        })
+    })
+    it('returns updated vote count', () => {
+        const voteUpdate = {
+            inc_vote: 3
+        }
+        return request(app).patch('/api/reviews/2').send(voteUpdate)
+        .then( result => result.body.review)
+        .then( review => {
+            expect(review.votes).toBe(8)
+        })
+    })
+    it('returns 404 if review by given index doesn not exist', () => {
+        const voteUpdate = {
+            inc_vote: 1
+        }
+        return request(app).patch('/api/reviews/404').send(voteUpdate).expect(404)
+        .then(result => {
+            expect(result.body.msg).toBe('Review by by ID "404" does not exist!')
+        })
+    })
+    it('returns 400 if provided incorect key', () => {
+        const voteUpdate = {
+            voting_frode: 1
+        }
+        return request(app).patch('/api/reviews/1').send(voteUpdate).expect(400)
+        .then(result => {
+            expect(result.body.msg).toBe('Key "voting_frode" in sent data is not correct - use key "inc_vote"')
+        })
+    });
+    it('returns 400 if provided incorect datatype', () => {
+        const voteUpdate = {
+            inc_vote: 'apples'
+        }
+        return request(app).patch('/api/reviews/1').send(voteUpdate).expect(400)
+        .then(result => {
+            expect(result.body.msg).toBe('Data sent "apples" is not compatible - use an integer')
+        })
+    });
+});
 
-//     })
-//   })
-// });
+describe('QUERY GET /api/reviews', () => {
+  it(" default setings: category=allReviews, sort_by=date, order=decending", () => {
+    //do a request check if all reviews returned, sorted by date(use jest sort) in decending order
+    return request(app).get('/api/reviews').expect(200)
+    .then( result => result.body.reviews)
+    .then( reviews => {
+      expect(reviews).toHaveLength(13)
+      expect(reviews).toBeSorted({decending: true, key: 'created_at'})
+    })
+  })
+  // it('returns review selected by provided category value ', () => {
+  //   return request(app).get('/api/reviews?owner=millionaire').expect(200)
+  //   .then( result => result.body.reviews)
+  //   .then( reviews => {
+  //     expect(reviews).toHaveLength(11)
+  //     expect(reviews).toBeSorted({decending: true, key: 'created_at'})
+  //    });
+  // });
+});
 
 /* Stop database and test qurry responses for endpoints*/
 describe("500 Internal Server Error", () => {

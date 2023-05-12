@@ -2,7 +2,8 @@ const express  = require('express')
 const app = express()
 const { getCategories } = require('./controllers/categories.controller.js')
 const { getApi } = require('./controllers/api.controller.js')
-const { getReviewByID, getReviews, getReviewComments } = require('./controllers/reviews.controller.js')
+const { getReviewByID, getReviews, patchReviewById, getReviewComments} = require('./controllers/reviews.controller.js')
+const { postComment } = require('./controllers/comments.controller.js')
 
 app.use(express.json())
 
@@ -16,17 +17,21 @@ app.get('/api/categories', getCategories)
 /* /api/reviews/:review_id */
 app.get('/api/reviews/:review_id', getReviewByID)
 
+app.post('/api/reviews/:review_id/comments', postComment)
+
 app.get('/api/reviews/:review_id/comments', getReviewComments)
 /* /api/reviews */
 app.get('/api/reviews', getReviews)
 
+app.patch('/api/reviews/:review_id', patchReviewById)
+
 /* Error hanlder */
-app.use((err, req, res, next)=> {
+app.use((err, req, res, next) => {
     res.status(err.status).send(err)
 })
 /* Invalid endpoint error hanlder*/
 app.use((req, res) => {
-    res.status(404).send({msg: 'Bad Request', status: 404})
+    res.status(404).send({ status: 404, msg: 'Bad Request' })
 })
 
 module.exports = app
