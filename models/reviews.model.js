@@ -3,15 +3,20 @@ const format = require('pg-format')
 const { fetchCategories } = require('./categories.module')
 
 exports.fetchReviewByID = (id) => {
-    if(!id) return Promise.reject({status: 400, msg: "Invalid Id"})
-    
+    if(!Number(id)) return Promise.reject({status: 400, msg: `ID "${id}" is invalid`})
+
     return db.query(`SELECT * FROM reviews WHERE review_id = $1`, [id])
-    .then(result => result.rows)
+    .then(result => result.rows[0])
     .then( review => {
-        if(review.length === 0){
-            return Promise.reject({status: 404, msg: "Review by that ID does not exist"})
+        if(!review){
+            return Promise.reject({status: 404, msg: `Review by ID ${id} does not exist`})
         }
-        return review[0]
+        return db.query(`SELECT COUNT(review_id) FROM comments WHERE review_id = $1;`, [review.review_id])
+        .then(result => result.rows[0].count)
+        .then( count => {
+            review.comment_count = Number(count)
+            return review
+         })
     })
 }
 
