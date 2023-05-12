@@ -225,15 +225,15 @@ describe('GET /api/review/:review_id/comments', () => {
     });
     it('returns 404 when id does not match a review', () => {
         return request(app).get('/api/reviews/145151/comments').expect(404)
-        .then( result => result.body.comments )
-        .then( comments => {
+        .then( result => result.body )
+        .then( error => {
             
         })
     })
     it('returns 400 when id is invalid', () => {
         return request(app).get('/api/reviews/pony/comments').expect(400)
-        .then( result => result.body.comments )
-        .then( comments => {
+        .then( result => result.body )
+        .then( error => {
         
         })
     });
@@ -299,6 +299,37 @@ describe("GET /api/reviews", () => {
       .then((reviews) => {
         expect(reviews).toBeSorted({decending: true, key: 'created_at'})
       });
+  });
+});
+
+describe('DELETE /api/comments/:comment_id', () => {
+  it('returns status 204', () => {
+    return request(app).delete('/api/comments/1').expect(204)
+  });
+  it('comments table will not have the deleted comment', () => {
+    return request(app).delete('/api/comments/1')
+    .then( result => {
+      return db.query(`SELECT * FROM comments WHERE comment_id = 1;`)
+    })
+    .then( result => result.rows)
+    .then( comments => {
+      expect(comments).toHaveLength(0)
+    })
+  });
+  it('returns 404 if given id does not exists', () => {
+    return request(app).delete('/api/comments/1000').expect(404)
+    .then( result => result.body)
+    .then( error => {
+      expect(error.msg).toBe(`Comment by ID "1000" does not exist`)
+    })
+  })
+  it('returns 400 when provided id is of wrong datatype', () => {
+    return request(app).delete('/api/comments/coment').expect(400)
+    .then( result => result.body)
+    .then( error => {
+      expect(error.msg).toBe(`Invalid comment id "coment" - use an integer`)
+    })
+    
   });
 });
 

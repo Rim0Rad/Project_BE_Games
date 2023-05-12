@@ -2,7 +2,8 @@ const express  = require('express')
 const app = express()
 const { getCategories } = require('./controllers/categories.controller.js')
 const { getApi } = require('./controllers/api.controller.js')
-const { getReviewByID, getReviews, patchReviewById, getReviewComments} = require('./controllers/reviews.controller.js')
+const { getReviewByID, getReviews, patchReviewById, getReviewComments } = require('./controllers/reviews.controller.js')
+const { deleteComentById } = require('./controllers/comments.controller.js')
 const { postComment } = require('./controllers/comments.controller.js')
 
 app.use(express.json())
@@ -23,6 +24,7 @@ app.get('/api/reviews/:review_id/comments', getReviewComments)
 /* /api/reviews */
 app.get('/api/reviews', getReviews)
 
+app.delete('/api/comments/:comment_id', deleteComentById)
 app.patch('/api/reviews/:review_id', patchReviewById)
 
 /* Error hanlder */

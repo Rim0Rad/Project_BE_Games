@@ -1,4 +1,15 @@
-const { uploadComment } = require('../models/comments.model.js')
+const { removeCommentById, uploadComment } = require('../models/comments.model.js')
+
+exports.deleteComentById = (req, res, next) => {
+    const commentId = req.params.comment_id
+    removeCommentById(commentId)
+    .then( () => {
+        res.sendStatus(204)
+    })
+    .catch( err => {
+        next(err)
+    })
+}
 
 exports.postComment = (req, res, next) => {
     
@@ -14,6 +25,4 @@ exports.postComment = (req, res, next) => {
         }
         next(err)
     })
- 
-    
 }
