@@ -97,12 +97,21 @@ describe("GET /api/reviews/:review_id", () => {
       });
   });
 
+  it(" returned review has property comment_count", () => {
+    return request(app).get("/api/reviews/2")
+    .then( result => result.body.review)
+    .then( review => {
+        expect(review).toHaveProperty('comment_count')
+        expect(review.comment_count).toBe(3)
+    })
+  })
+
   it("returns 404 when review by that id does not exist", () => {
     return request(app)
       .get("/api/reviews/124124214")
       .expect(404)
       .then((result) => {
-        expect(result.body.msg).toBe("Review by that ID does not exist");
+        expect(result.body.msg).toBe("Review by ID 124124214 does not exist");
       });
   });
   it("returns 400 when given invalid id", () => {
