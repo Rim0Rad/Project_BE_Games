@@ -302,6 +302,70 @@ describe("GET /api/reviews", () => {
   });
 });
 
+describe('PATCH /api/reviews/:review_id', () => {
+    it('returns status 200', () => {
+        const voteUpdate = {
+            inc_vote: 1
+        }
+        return request(app).patch('/api/reviews/1').send(voteUpdate).expect(200)
+    });
+    it('returned comment has required properties', () => {
+        const voteUpdate = {
+            inc_vote: 1
+        }
+        return request(app).patch('/api/reviews/1').send(voteUpdate)
+        .then( result => result.body.review)
+        .then( review  => {
+            expect(review).toHaveProperty('review_id')
+            expect(review).toHaveProperty('title')
+            expect(review).toHaveProperty('designer')
+            expect(review).toHaveProperty('owner')
+            expect(review).toHaveProperty('review_img_url')
+            expect(review).toHaveProperty('review_body')
+            expect(review).toHaveProperty('category')
+            expect(review).toHaveProperty('created_at')
+            expect(review).toHaveProperty('votes')
+        })
+    })
+    it('returns updated vote count', () => {
+        const voteUpdate = {
+            inc_vote: 3
+        }
+        return request(app).patch('/api/reviews/2').send(voteUpdate)
+        .then( result => result.body.review)
+        .then( review => {
+            expect(review.votes).toBe(8)
+        })
+    })
+    it('returns 404 if review by given index doesn not exist', () => {
+        const voteUpdate = {
+            inc_vote: 1
+        }
+        return request(app).patch('/api/reviews/404').send(voteUpdate).expect(404)
+        .then(result => {
+            expect(result.body.msg).toBe('Review by by ID "404" does not exist!')
+        })
+    })
+    it('returns 400 if provided incorect key', () => {
+        const voteUpdate = {
+            voting_frode: 1
+        }
+        return request(app).patch('/api/reviews/1').send(voteUpdate).expect(400)
+        .then(result => {
+            expect(result.body.msg).toBe('Key "voting_frode" in sent data is not correct - use key "inc_vote"')
+        })
+    });
+    it('returns 400 if provided incorect datatype', () => {
+        const voteUpdate = {
+            inc_vote: 'apples'
+        }
+        return request(app).patch('/api/reviews/1').send(voteUpdate).expect(400)
+        .then(result => {
+            expect(result.body.msg).toBe('Data sent "apples" is not compatible - use an integer')
+        })
+    });
+});
+
 /* Stop database and test qurry responses for endpoints*/
 describe("500 Internal Server Error", () => {
   it("returns 500 for internal server error", () => {
