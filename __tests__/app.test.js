@@ -117,7 +117,7 @@ describe("GET /api/reviews/:review_id", () => {
   it("returns 400 when given invalid id", () => {
     return request(app).get("/api/reviews/hello").expect(400)
       .then((result) => {
-        expect(result.body.msg).toBe("Invalid Id");
+        expect(result.body.msg).toBe('ID "hello" is invalid');
       });
   });
 });

@@ -1,8 +1,8 @@
 const db = require('../db/connection')
 
 exports.fetchReviewByID = (id) => {
-    if(!id) return Promise.reject({status: 400, msg: "Invalid Id"})
-    
+    if(!Number(id)) return Promise.reject({status: 400, msg: `ID "${id}" is invalid`})
+
     return db.query(`SELECT * FROM reviews WHERE review_id = $1`, [id])
     .then(result => result.rows[0])
     .then( review => {
@@ -15,7 +15,6 @@ exports.fetchReviewByID = (id) => {
             review.comment_count = Number(count)
             return review
          })
-        
     })
 }
 
