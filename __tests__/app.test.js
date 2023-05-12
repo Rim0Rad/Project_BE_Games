@@ -302,6 +302,32 @@ describe("GET /api/reviews", () => {
   });
 });
 
+describe('GET /api/user', () => {
+  it('returns status 200', () => {
+    return request(app).get('/api/user').expect(200)  
+  });
+  it('returns array of all users', () => {
+    return request(app).get('/api/user')
+    .then( result => result.body.users)
+    .then( users => {
+      expect(users).toHaveLength(4)
+    })
+  });
+
+  it('users have correct properties', () => {
+    return request(app).get('/api/user')
+    .then( result => result.body.users)
+    .then( users => {
+      users.forEach( user => {
+        expect(user).toHaveProperty('username')
+        expect(user).toHaveProperty('name')
+        expect(user).toHaveProperty('avatar_url')
+      
+      })
+    })
+  });
+});
+  
 describe('DELETE /api/comments/:comment_id', () => {
   it('returns status 204', () => {
     return request(app).delete('/api/comments/1').expect(204)

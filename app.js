@@ -3,9 +3,8 @@ const app = express()
 const { getCategories } = require('./controllers/categories.controller.js')
 const { getApi } = require('./controllers/api.controller.js')
 const { getReviewByID, getReviews, patchReviewById, getReviewComments } = require('./controllers/reviews.controller.js')
-const { deleteComentById } = require('./controllers/comments.controller.js')
-const { postComment } = require('./controllers/comments.controller.js')
-
+const { deleteComentById, postComment } = require('./controllers/comments.controller.js')
+const { getUsers } = require('./controllers/users.controller.js')
 app.use(express.json())
 
 /* /api - documentation endpoint that returns and object detailing all available endpoints 
@@ -24,6 +23,7 @@ app.get('/api/reviews/:review_id/comments', getReviewComments)
 /* /api/reviews */
 app.get('/api/reviews', getReviews)
 
+app.get('/api/user', getUsers)
 app.delete('/api/comments/:comment_id', deleteComentById)
 app.patch('/api/reviews/:review_id', patchReviewById)
 
