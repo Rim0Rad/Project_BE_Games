@@ -368,21 +368,23 @@ describe('PATCH /api/reviews/:review_id', () => {
 
 describe('QUERY GET /api/reviews', () => {
   it(" default setings: category=allReviews, sort_by=date, order=decending", () => {
-    //do a request check if all reviews returned, sorted by date(use jest sort) in decending order
     return request(app).get('/api/reviews').expect(200)
     .then( result => result.body.reviews)
     .then( reviews => {
-      expect(reviews).toHaveLength(13)
-      expect(reviews).toBeSorted( 'created_at', {decending: true})
+        expect(reviews).toHaveLength(13)
+        expect(reviews).toBeSorted( 'created_at', {decending: true})
     })
   })
   it('returns reviews filtered by provided category', () => {
     return request(app).get('/api/reviews?category=dexterity').expect(200)
     .then( result => result.body.reviews)
     .then( reviews => {
-      expect(reviews).toHaveLength(1)
-      expect(reviews).toBeSorted('created_at', {decending: true })
-     });
+        expect(reviews).toHaveLength(1)
+        expect(reviews).toBeSorted('created_at', {decending: true })
+        reviews.forEach( review => {
+            expect(review.category).toBe('dexterity')
+        })
+    });
   });
 
   it('returns reviews sorted by provided sort_by column ', () => {
@@ -400,6 +402,14 @@ describe('QUERY GET /api/reviews', () => {
      });
   });
 
+  it('returns 200 and an empty array when reviews by given category not found ', () => {
+    return request(app).get(`/api/reviews?category=children's games`).expect(200)
+    .then( result => result.body.reviews)
+    .then( reviews => {
+      expect(reviews).toHaveLength(0)
+    });
+  });
+
   it("returns 400 if sort_by query is invalid", () => {
     return request(app).get('/api/reviews?sort_by=apple').expect(400)
     .then( result => result.body)
@@ -415,7 +425,7 @@ describe('QUERY GET /api/reviews', () => {
     });
   });
  
-  it('returns 400 if Category query is invalid', () => {
+  it('returns 404 if Category query is invalid', () => {
     return request(app).get('/api/reviews?category=nothing').expect(404)
     .then( result => result.body)
     .then( error => {

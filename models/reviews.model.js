@@ -1,5 +1,6 @@
 const db = require('../db/connection')
 const format = require('pg-format')
+const { fetchCategories } = require('./categories.module')
 
 exports.fetchReviewByID = (id) => {
     if(!id) return Promise.reject({status: 400, msg: "Invalid Id"})
@@ -32,30 +33,37 @@ exports.fetchReviews = (category = null, sort_by = 'created_at', order = 'DESC')
     if(!acceptableOrderQuery.includes(order)){
         return Promise.reject({status: 400, msg: `Parameter order value "${order}" is invalid`})
     }
-
-    let sql = 'SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer FROM reviews'
-    if(category){
-        sql += format(` WHERE category = %L`, category)
-    }
-    sql = format(sql + " ORDER BY %s %s", sort_by, order)
     
-    return db.query(sql)
-    .then( result => result.rows)
-    .then( reviews => {
-        if(reviews.length === 0){
+    return fetchCategories()
+    .then( categories => {
+        if(category && !categories.some( cat => { return cat.slug === category })){
             return Promise.reject({status: 404, msg: `Category "${category}" does not exist`})
         }
-        // Count the number of comments on the review
-        const promises = []
-        for(let i = 0; i < reviews.length; i++){
-            promises.push(db.query(`SELECT COUNT(review_id) FROM comments WHERE review_id = $1;`, [reviews[i].review_id])
-            .then(result => result.rows[0].count)
-            .then( count => {
-                reviews[i].comment_count = Number(count)
-            }))
+
+        let sql = 'SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer FROM reviews'
+        if(category){
+            sql += format(` WHERE category = %L`, category)
         }
-        return Promise.all(promises)
-        .then( () =>  reviews)
+        sql = format(sql + " ORDER BY %s %s", sort_by, order)
+
+        return db.query(sql)
+    })
+    .then( result => result.rows)
+    .then( reviews => {
+        // Count the number of comments on the review
+        if(reviews){
+            const promises = []
+            for(let i = 0; i < reviews.length; i++){
+                promises.push(db.query(`SELECT COUNT(review_id) FROM comments WHERE review_id = $1;`, [reviews[i].review_id])
+                .then(result => result.rows[0].count)
+                .then( count => {
+                    reviews[i].comment_count = Number(count)
+                }))
+            }
+            return Promise.all(promises)
+            .then( () =>  reviews)
+        }
+        return reviews
     })
 }
 
