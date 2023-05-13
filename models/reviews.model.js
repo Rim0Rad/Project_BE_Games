@@ -3,7 +3,7 @@ const format = require('pg-format')
 const { fetchCategories } = require('./categories.module')
 
 exports.fetchReviewByID = (id) => {
-    if(!Number(id)) return Promise.reject({status: 400, msg: `ID "${id}" is invalid`})
+    if(!Number(id)) return Promise.reject({status: 400, msg: `ID '${id}' is invalid`})
 
     return db.query(`SELECT * FROM reviews WHERE review_id = $1`, [id])
     .then(result => result.rows[0])

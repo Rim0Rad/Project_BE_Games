@@ -23,7 +23,7 @@ app.get('/api/reviews/:review_id/comments', getReviewComments)
 /* /api/reviews */
 app.get('/api/reviews', getReviews)
 
-app.get('/api/user', getUsers)
+app.get('/api/users', getUsers)
 app.delete('/api/comments/:comment_id', deleteComentById)
 app.patch('/api/reviews/:review_id', patchReviewById)
 
