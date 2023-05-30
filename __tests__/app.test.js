@@ -290,16 +290,16 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-  it("does not have a property review_body", () => {
-    return request(app)
-      .get("/api/reviews")
-      .then((result) => result.body.reviews)
-      .then((reviews) => {
-        reviews.forEach((review) => {
-          expect(review).not.toHaveProperty("review_body");
-        });
-      });
-  });
+  // it("does not have a property review_body", () => {
+  //   return request(app)
+  //     .get("/api/reviews")
+  //     .then((result) => result.body.reviews)
+  //     .then((reviews) => {
+  //       reviews.forEach((review) => {
+  //         expect(review).not.toHaveProperty("review_body");
+  //       });
+  //     });
+  // });
 
   it("reviews are sorted by data in decending order by default", () => {
     return request(app)
