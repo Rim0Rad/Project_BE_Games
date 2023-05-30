@@ -117,7 +117,7 @@ describe("GET /api/reviews/:review_id", () => {
   it("returns 400 when given invalid id", () => {
     return request(app).get("/api/reviews/hello").expect(400)
       .then((result) => {
-        expect(result.body.msg).toBe('ID "hello" is invalid');
+        expect(result.body.msg).toBe("ID 'hello' is invalid");
       });
   });
 });
@@ -198,7 +198,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
     });
 });
 
-describe('GET /api/review/:review_id/comments', () => {
+describe('GET /api/reviews/:review_id/comments', () => {
     it('returns status 200', () => {
         return request(app).get('/api/reviews/1/comments').expect(200)
     });
@@ -311,12 +311,12 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe('GET /api/user', () => {
+describe('GET /api/users', () => {
   it('returns status 200', () => {
-    return request(app).get('/api/user').expect(200)  
+    return request(app).get('/api/users').expect(200)  
   });
   it('returns array of all users', () => {
-    return request(app).get('/api/user')
+    return request(app).get('/api/users')
     .then( result => result.body.users)
     .then( users => {
       expect(users).toHaveLength(4)
@@ -324,7 +324,7 @@ describe('GET /api/user', () => {
   });
 
   it('users have correct properties', () => {
-    return request(app).get('/api/user')
+    return request(app).get('/api/users')
     .then( result => result.body.users)
     .then( users => {
       users.forEach( user => {
