@@ -14,6 +14,7 @@ app.use('/api/reviews', apiRouter)
 app.use('/api/reviews/:review_id', apiRouter)
 app.post('/api/reviews/:review_id/comments', apiRouter)
 app.patch('/api/reviews/:review_id', apiRouter)
+
 app.get('/api/reviews/:review_id/comments', apiRouter)
 app.get('/api/users', apiRouter)
 app.delete('/api/comments/:comment_id', apiRouter)
