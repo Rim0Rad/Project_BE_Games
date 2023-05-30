@@ -32,6 +32,7 @@ exports.fetchReviews = (category = null, sort_by = 'created_at', order = 'DESC')
 
     const acceptableOrderQuery = [ 'ASC', 'DESC'];
     const acceptedSortBy = ['owner', 'title','review_id','category','review_img_url','created_at','votes','designer']
+    
     if(!acceptedSortBy.includes(sort_by)){
         return Promise.reject({status: 400, msg: `Parameter sort_by value "${sort_by}" is invalid`})
     }
@@ -45,7 +46,7 @@ exports.fetchReviews = (category = null, sort_by = 'created_at', order = 'DESC')
             return Promise.reject({status: 404, msg: `Category "${category}" does not exist`})
         }
 
-        let sql = 'SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer FROM reviews'
+        let sql = 'SELECT owner,title,review_id,category,review_img_url,created_at,votes,designer,review_body FROM reviews'
         if(category){
             sql += format(` WHERE category = %L`, category)
         }
