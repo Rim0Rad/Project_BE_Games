@@ -31,7 +31,7 @@ exports.fetchReviewComments = (id) => {
 exports.fetchReviews = (category = null, sort_by = 'created_at', order = 'DESC') => {
 
     const acceptableOrderQuery = [ 'ASC', 'DESC'];
-    const acceptedSortBy = ['owner', 'title','review_id','category','review_img_url','created_at','votes','designer']
+    const acceptedSortBy = ['owner', 'title','review_id','category','review_img_url','created_at','votes','designer', 'comment_count']
     
     if(!acceptedSortBy.includes(sort_by)){
         return Promise.reject({status: 400, msg: `Parameter sort_by value "${sort_by}" is invalid`})
