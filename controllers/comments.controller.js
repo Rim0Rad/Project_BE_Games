@@ -1,4 +1,4 @@
-const { removeCommentById, uploadComment } = require('../models/comments.model.js')
+const { removeCommentById, uploadComment, updateCommentVotes } = require('../models/comments.model.js')
 
 exports.deleteComentById = (req, res, next) => {
     const commentId = req.params.comment_id
@@ -23,6 +23,19 @@ exports.postComment = (req, res, next) => {
         if(err.code === '23503'){
             err = {status:404, msg: "Review does not exist"}
         }
+        next(err)
+    })
+}
+
+exports.patchCommnetById = (req, res, next) => {
+
+    const comment_data = req.body;
+    const comment_id = req.params.comment_id;
+    updateCommentVotes( comment_id, comment_data)
+    .then( commnet => {
+        res.status(200).send({comment: comment})
+    })
+    .catch( err => {
         next(err)
     })
 }

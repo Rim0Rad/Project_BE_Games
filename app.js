@@ -15,9 +15,10 @@ app.use('/api/reviews/:review_id', apiRouter)
 app.post('/api/reviews/:review_id/comments', apiRouter)
 app.patch('/api/reviews/:review_id', apiRouter)
 
-app.get('/api/reviews/:review_id/comments', apiRouter)
 app.get('/api/users', apiRouter)
+app.get('/api/reviews/:review_id/comments', apiRouter)
 app.delete('/api/comments/:comment_id', apiRouter)
+app.patch('/api/comments/:comment_id', apiRouter)
 
 /* Invalid endpoint error hanlder*/
 app.use((req, res) => {
