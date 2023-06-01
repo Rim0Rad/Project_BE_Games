@@ -500,6 +500,18 @@ describe('QUERY GET /api/reviews', () => {
   });
 });
 
+
+describe.only('PATCH - comments', () => {
+
+  it("returns updated cotes of comment with status 200", () => {
+    return request(app).patch('/api/comments/2').send({inc_vote: 3}).expect(200)
+    .then( response => {
+      console.log(response.body.comment)
+      expect(response.body.comment.votes).toBe(19)
+    })
+  })
+});
+
 /* Stop database and test qurry responses for endpoints*/
 describe("500 Internal Server Error", () => {
   it("returns 500 for internal server error", () => {
@@ -510,3 +522,4 @@ describe("500 Internal Server Error", () => {
     return Promise.all([getCategories, getReviews, getReviewsById]);
   });
 });
+
