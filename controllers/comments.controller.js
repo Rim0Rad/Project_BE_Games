@@ -28,14 +28,15 @@ exports.postComment = (req, res, next) => {
 }
 
 exports.patchCommnetById = (req, res, next) => {
-
+    console.log("patch")
     const comment_data = req.body;
     const comment_id = req.params.comment_id;
     updateCommentVotes( comment_id, comment_data)
-    .then( commnet => {
+    .then( comment => {
         res.status(200).send({comment: comment})
     })
     .catch( err => {
+        console.log(err)
         next(err)
     })
 }
