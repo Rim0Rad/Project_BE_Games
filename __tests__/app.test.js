@@ -504,9 +504,9 @@ describe('QUERY GET /api/reviews', () => {
 describe('PATCH - comments', () => {
 
   it("returns updated cotes of comment with status 200", () => {
-    return request(app).patch('/api/comments/2').send({inc_vote: 3}).expect(200)
+    return request(app).patch('/api/comments/2').send({inc_vote: 1}).expect(200)
     .then( response => {
-      expect(response.body.comment.votes).toBe(19)
+      expect(response.body.comment.votes).toBe(14)
     })
   })
 });
