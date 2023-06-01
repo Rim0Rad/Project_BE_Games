@@ -36,7 +36,6 @@ exports.patchCommnetById = (req, res, next) => {
         res.status(200).send({comment: comment})
     })
     .catch( err => {
-        console.log(err)
         next(err)
     })
 }

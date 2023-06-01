@@ -61,10 +61,11 @@ exports.updateCommentVotes = (comment_id, voteChange) => {
     WHERE review_id = $2
     RETURNING *;`, [voteChange.inc_vote, comment_id])
     .then( result => result.rows[0])
-    .then( commnet => {
-        if(!commnet){
+    .then( comment => {
+        console.log(comment)
+        if(!comment){
             return Promise.reject({status: 404, msg: `Comment by by ID "${comment_id}" does not exist!`})
         }
-        return commnet
+        return comment;
     })
 }
