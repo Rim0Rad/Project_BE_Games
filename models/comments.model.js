@@ -23,15 +23,15 @@ exports.uploadComment = (comment, review_id) => {
     if(!comment.body){
         return Promise.reject({status: 400, msg:'Comment is missing a body'})
     }
-    if(!comment.username){
+    if(!comment.author){
         return Promise.reject({status: 400, msg:'Comment is missing username'})
     } 
     
-    return db.query(`SELECT username FROM users WHERE username = $1`, [comment.username])
+    return db.query(`SELECT username FROM users WHERE username = $1`, [comment.author])
     .then( result => result.rows)
     .then( users => {
         if(users.length === 0){
-            return Promise.reject({status: 404, msg: `Username "${comment.username}" does not exist`})
+            return Promise.reject({status: 404, msg: `Username "${comment.author}" does not exist`})
         }
         let sql = format(`
             INSERT INTO comments
