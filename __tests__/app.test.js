@@ -125,7 +125,7 @@ describe("GET /api/reviews/:review_id", () => {
 describe('POST /api/reviews/:review_id/comment', () => {
     it('returns status 201', () => {
         const newComment = {
-            username: "mallionaire",
+          author: "mallionaire",
             body: " Great game"
         }
         return request(app).post('/api/reviews/1/comments')
@@ -134,7 +134,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
 
     it('returns posted comment', () => {
         const newComment = {
-            username: "philippaclaire9",
+          author: "philippaclaire9",
             body: " Best review ever!"
         }
         return request(app).post('/api/reviews/2/comments')
@@ -151,7 +151,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
     });
     it('returns status 404 when given user that does not exist', () => {
         const newComment = {
-            username: "AverageUser",
+          author: "AverageUser",
             body: " Best review ever!"
         }
         return request(app).post('/api/reviews/2/comments')
@@ -163,7 +163,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
     });
     it('returns status 400 when comment is missing body', () => {
         const newComment = {
-            username: "dav3rid",
+          author: "dav3rid",
         }
         return request(app).post('/api/reviews/2/comments')
         .send(newComment).expect(400)
@@ -174,7 +174,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
     });
     it('returns status 404 when review by given review id does not exist', () => {
         const newComment = {
-            username: 'bainesface',
+          author: 'bainesface',
             body:"does this review exists?!"
         }
         return request(app).post('/api/reviews/244/comments')
@@ -186,7 +186,7 @@ describe('POST /api/reviews/:review_id/comment', () => {
     });
     it('returns status 400 when review id is invalid', () => {
         const newComment = {
-            username: 'bainesface',
+          author: 'bainesface',
             body:"Well thats not an ID!"
         }
         return request(app).post('/api/reviews/pumpkin/comments')
